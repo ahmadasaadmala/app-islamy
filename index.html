@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+<!DOCTYPE html>
+<html lang="ckb">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پرسیاری ئیسلامی</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0e1f29 0%, #2a4a3f 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            direction: rtl;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0b2b23 0%, #1a3f35 100%);
+            color: white;
+            padding: 10px 10px;
+            text-align: center;
+            border-bottom: 4px solid #ffffff;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .language-switcher {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 50px;
+            padding: 8px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn:hover {
+            background: white;
+            color: #0b2b23;
+            transform: translateY(-2px);
+        }
+
+        .lang-btn.active {
+            background: #d4a373;
+            border-color: #d4a373;
+            color: white;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            background: #f0f4f3;
+            padding: 20px;
+            border-bottom: 1px solid #ccc;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat-box {
+            text-align: center;
+            background: white;
+            padding: 10px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-box span {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #0b2b23;
+            display: block;
+        }
+
+        .stat-box label {
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .quiz-area {
+            padding: 30px;
+            background: #f9fbfa;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffffff, #ffffff);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .question-counter {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.8rem;
+            color: #0b2b23;
+            font-weight: 600;
+        }
+
+        .question-box {
+            background: white;
+            border-radius: 20px;
+            padding: 5px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            color: #0b2b23;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            font-weight: 500;
+            border-right: 5px solid #e6e6e6;
+            padding-right: 100px;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .option {
+            background: #f5f7f7;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .option:hover:not(.disabled-option) {
+            background: #e8f0ed;
+            border-color: #112434;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .option.selected {
+            background: #0b2b23;
+            color: white;
+            border-color: #d4a373;
+        }
+
+        .option.correct {
+            background: #28a745;
+            color: white;
+            border-color: #1e7e34;
+        }
+
+        .option.wrong {
+            background: #dc3545;
+            color: white;
+            border-color: #bd2130;
+        }
+
+        .option.disabled-option {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .option-prefix {
+            width: 30px;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .selected .option-prefix {
+            background: rgb(255, 255, 255);
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .nav-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 1000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .prev-btn {
+            background: #931a1a;
+            color: rgb(255, 255, 255);
+            font-size: 30px;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        .next-btn {
+            background: #0b1b25;
+            color: white;
+            font-size: 30px;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        .reset-btn {
+            background: #dc3545;
+            color: white;
+            width: 100%;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .restart-btn {
+            background: #d4a373;
+            color: white;
+        }
+
+        .restart-btn:hover {
+            background: #b5835a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .review-section {
+            background: #f0f4f3;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .review-title {
+            text-align: center;
+            color: #0b2b23;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .review-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .review-item {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .review-item:hover {
+            border-color: #d4a373;
+            transform: scale(1.05);
+        }
+
+        .review-item.answered {
+            background: #0b2b23;
+            color: white;
+            border-color: #0b2c4e;
+        }
+
+        .review-item.current {
+            border: 3px solid #13243c;
+            transform: scale(1.05);
+        }
+
+        .review-item.correct-answer {
+            background: #28a745;
+            color: white;
+        }
+
+        .review-item.wrong-answer {
+            background: #dc3545;
+            color: white;
+        }
+
+        .review-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #ccc;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .review-stat {
+            text-align: center;
+        }
+
+        .review-stat span {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0b2b23;
+            display: block;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #0b2b23;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .result-screen {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 20px;
+            margin: 20px;
+        }
+
+        .result-screen h2 {
+            color: #0b2b23;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .result-score {
+            font-size: 4rem;
+            color: #ffffff;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .result-message {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .warning-message {
+            background: #fff3cd;
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .question-text {
+                font-size: 1.2rem;
+            }
+            
+            .nav-buttons {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .nav-btn {
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
+
+            .review-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="main-title">📖 پرسیاری ئیسلامی</h1>
+            <p id="main-subtitle"></p>
+            
+            <div class="language-switcher">
+                <button class="lang-btn active" onclick="changeLanguage('ckb', this)">کوردی</button>
+                <button class="lang-btn" onclick="changeLanguage('ar', this)">العربية</button>
+                <button class="lang-btn" onclick="changeLanguage('en', this)">English</button>
+            </div>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat-box">
+                <span id="score">0</span>
+                <label id="score-label">خاڵ</label>
+            </div>
+            <div class="stat-box">
+                <span id="answered-count">0</span>
+                <label id="answered-label">وەڵامدراوە</label>
+            </div>
+            <div class="stat-box">
+                <span id="remaining-count">100</span>
+                <label id="remaining-label">ماوە</label>
+            </div>
+        </div>
+
+        <div class="quiz-area" id="quiz-area"></div>
+
+        <div class="footer">
+            <p id="footer-text">﷽ • بە ناوی خوای میهرەبان و دلۆڤان</p>
+        </div>
+    </div>
+
+    <script>
+        // وەرگێڕانەکان بۆ هەر سێ زمان
+        const translations = {
+            ckb: {
+                mainTitle: "📖 زانستی ئیسلامی",
+                mainSubtitle: "١٠٠ پرسیاری ناوازە لەسەر قورئان و پێغەمبەران",
+                score: "خاڵ",
+                answered: "وەڵامدراوە",
+                remaining: "ماوە",
+                prevBtn: "⏩ پێشتر",
+                nextBtn: "⏪ دواتر",
+                resetBtn: "تەواوکردنی تاقیکردنەوە",
+                restartBtn: "🔄 دەستپێکردنەوە",
+                reviewTitle: "پێداچوونەوە",
+                correct: "ڕاست",
+                wrong: "هەڵە",
+                warning: "⚠️ وەڵامی هەڵەت دا! ناتوانیت وەڵامی تر بەم پرسیارە بدەیت.",
+                correctAnswer: "وەڵامی ڕاست",
+                resultTitle: "تاقیکردنەوەکەت تەواو بوو!",
+                points: "خاڵ",
+                from: "لە",
+                answeredQs: "وەڵامدراو",
+                successRate: "ڕێژەی سەرکەوتن",
+                footer: "﷽ • بە ناوی خوای میهرەبان و دلۆڤان",
+                excellent: "زۆر باش! تۆ شارەزایەکی ئیسلامی بەرزی.",
+                good: "باشە. کەمێک زیاتر بخوێنە.",
+                average: "ناوەسطیت. هەوڵ بدە زیاتر بزانیت.",
+                needStudy: "پێویستە زیاتر بخوێنیت لەسەر ئیسلام."
+            },
+            ar: {
+                mainTitle: "📖 الثقافة الإسلامية",
+                mainSubtitle: "١٠٠ سؤالاً مميزاً عن القرآن والأنبياء",
+                score: "نقاط",
+                answered: "تمت الإجابة",
+                remaining: "المتبقي",
+                prevBtn: "→ السابق",
+                nextBtn: "التالي ←",
+                resetBtn: "إنهاء الاختبار",
+                restartBtn: "🔄 إعادة البدء",
+                reviewTitle: "📋 قائمة الأسئلة",
+                correct: "صحيح",
+                wrong: "خطأ",
+                warning: "⚠️ إجابة خاطئة! لا يمكنك الإجابة مرة أخرى.",
+                correctAnswer: "الإجابة الصحيحة",
+                resultTitle: "لقد انتهى الاختبار!",
+                points: "نقاط",
+                from: "من",
+                answeredQs: "تمت الإجابة",
+                successRate: "نسبة النجاح",
+                footer: "﷽ • بسم الله الرحمن الرحيم",
+                excellent: "ممتاز! أنت خبير إسلامي كبير.",
+                good: "جيد. اقرأ أكثر قليلاً.",
+                average: "متوسط. حاول معرفة المزيد.",
+                needStudy: "تحتاج إلى دراسة المزيد عن الإسلام."
+            },
+            en: {
+                mainTitle: "📖 Islamic Knowledge",
+                mainSubtitle: "100 Unique Questions about Quran and Prophets",
+                score: "Score",
+                answered: "Answered",
+                remaining: "Remaining",
+                prevBtn: "← Previous",
+                nextBtn: "Next →",
+                resetBtn: "Finish Test",
+                restartBtn: "🔄 Restart",
+                reviewTitle: "📋 Questions List",
+                correct: "Correct",
+                wrong: "Wrong",
+                warning: "⚠️ Wrong answer! You cannot answer this question again.",
+                correctAnswer: "Correct answer",
+                resultTitle: "Test Completed!",
+                points: "points",
+                from: "out of",
+                answeredQs: "answered",
+                successRate: "Success Rate",
+                footer: "﷽ • In the name of Allah, the Most Gracious, the Most Merciful",
+                excellent: "Excellent! You are a great Islamic expert.",
+                good: "Good. Study a bit more.",
+                average: "Average. Try to learn more.",
+                needStudy: "You need to study more about Islam."
+            }
+        };
+
+        // ١٠٠ پرسیاری ئیسلامی
+        const questions = [
+            // =============== قورئان (١-٥٠) ===============
+            // ١-١٠
+            {
+                question: { ckb: "یەکەم سورەتی قورئان کامەیە؟", ar: "ما هي أول سورة في القرآن؟", en: "What is the first surah of the Quran?" },
+                options: { ckb: ["البقرة", "الفاتحة", "الناس", "الإخلاص"], ar: ["البقرة", "الفاتحة", "الناس", "الإخلاص"], en: ["Al-Baqarah", "Al-Fatihah", "An-Nas", "Al-Ikhlas"] },
+                correct: 1
+            },
+            {
+                question: { ckb: "کۆتایی سورەتی قورئان کامە؟", ar: "ما هي آخر سورة في القرآن؟", en: "What is the last surah of the Quran?" },
+                options: { ckb: ["الفلق", "الناس", "الإخلاص", "المسد"], ar: ["الفلق", "الناس", "الإخلاص", "المسد"], en: ["Al-Falaq", "An-Nas", "Al-Ikhlas", "Al-Masad"] },
+                correct: 1
+            },
+            {
+                question: { ckb: "قورئان له چ رۆژه ک دابه زی", ar: "في أي شهر نزل القرآن؟", en: "In which month was the Quran revealed?" },
+                options: { ckb: ["شەعبان", "رمضان", "محرم", "رجب"], ar: ["شعبان", "رمضان", "محرم", "رجب"], en: ["Sha'ban", "Ramadan", "Muharram", "Rajab"] },
+                correct: 1
+            },
+            {
+                question: { ckb: "ئه و شه وه ی قورئان دابه زی", ar: "ما هي الليلة التي نزل فيها القرآن؟", en: "What is the night when the Quran was revealed?" },
+                options: { ckb: ["لیلة القدر", "لیلة المعراج", "لیلة الجمعة", "لیلة البراءة"], ar: ["لیلة القدر", "لیلة المعراج", "لیلة الجمعة", "لیلة البراءة"], en: ["Laylat al-Qadr", "Laylat al-Mi'raj", "Friday night", "Laylat al-Bara'ah"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "ژمارەی سورەته کانی قورئان چەندە؟", ar: "كم عدد سور القرآن؟", en: "How many surahs are in the Quran?" },
+                options: { ckb: ["١١٤", "١١٠", "١٢٠", "١١٣"], ar: ["١١٤", "١١٠", "١٢٠", "١١٣"], en: ["114", "110", "120", "113"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "گەورەترین سورە کامە؟", ar: "ما هي أطول سورة في القرآن؟", en: "What is the longest surah in the Quran?" },
+                options: { ckb: ["البقرة", "آل عمران", "النساء", "المائدة"], ar: ["البقرة", "آل عمران", "النساء", "المائدة"], en: ["Al-Baqarah", "Aal-E-Imran", "An-Nisa", "Al-Ma'idah"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "کورتترین سورەت کامە؟", ar: "ما هي أقصر سورة في القرآن؟", en: "What is the shortest surah in the Quran?" },
+                options: { ckb: ["الکوثر", "العصر", "الفلق", "الناس"], ar: ["الكوثر", "العصر", "الفلق", "الناس"], en: ["Al-Kawthar", "Al-Asr", "Al-Falaq", "An-Nas"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "یس بە چی ناسراوە؟", ar: "بماذا تُعرف سورة يس؟", en: "What is Surah Ya-Sin known as?" },
+                options: { ckb: ["دڵی قورئان", "سەروەری قورئان", "نوری قورئان", "ڕەحمەتی قورئان"], ar: ["قلب القرآن", "سيد القرآن", "نور القرآن", "رحمة القرآن"], en: ["Heart of the Quran", "Master of the Quran", "Light of the Quran", "Mercy of the Quran"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەته کە بە دوو نور ناسراوە؟", ar: "ما هي السورة التي تُعرف بالزهراوين؟", en: "Which surahs are known as the two lights?" },
+                options: { ckb: ["الفلق و الناس", "البقرة و آل عمران", "یس و الرحمن", "الکهف و مریم"], ar: ["الفلق والناس", "البقرة وآل عمران", "يس والرحمن", "الكهف ومريم"], en: ["Al-Falaq and An-Nas", "Al-Baqarah and Aal-E-Imran", "Ya-Sin and Ar-Rahman", "Al-Kahf and Maryam"] },
+                correct: 1
+            },
+            {
+                question: { ckb: "سورەتی کهف لە چ ڕۆژێ خوێندرێت؟", ar: "في أي يوم تُقرأ سورة الكهف؟", en: "On which day is Surah Al-Kahf read?" },
+                options: { ckb: ["دووشەممە", "هەینی", "شەممە", "یەکشەممە"], ar: ["الاثنين", "الجمعة", "السبت", "الأحد"], en: ["Monday", "Friday", "Saturday", "Sunday"] },
+                correct: 1
+            },
+            // ١١-٢٠
+            {
+                question: { ckb: "سورەته کە بە ناوی ئاژەڵە؟", ar: "ما هي السورة التي تحمل اسم حيوان؟", en: "Which surah is named after an animal?" },
+                options: { ckb: ["البقرة", "النحل", "الفیل", "العنكبوت"], ar: ["البقرة", "النحل", "الفيل", "العنكبوت"], en: ["Al-Baqarah", "An-Nahl", "Al-Fil", "Al-Ankabut"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتە کە بە ناوی مێرووله یه؟", ar: "ما هي السورة التي تحمل اسم النمل؟", en: "Which surah is named after ants?" },
+                options: { ckb: ["النمل", "النحل", "العنكبوت", "الذباب"], ar: ["النمل", "النحل", "العنكبوت", "الذباب"], en: ["An-Naml", "An-Nahl", "Al-Ankabut", "Adh-Dhabab"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی الناس باس لە چی دەکات؟", ar: "ماذا تتحدث سورة الناس؟", en: "What does Surah An-Nas talk about?" },
+                options: { ckb: ["خەلق", "شەڕ", "پەنابردن لە شەیتان", "پەنابردن لە مرۆڤ"], ar: ["الناس", "الحرب", "الاستعاذة من الشيطان", "الاستعاذة من الناس"], en: ["People", "War", "Seeking refuge from Satan", "Seeking refuge from people"] },
+                correct: 2
+            },
+            {
+                question: { ckb: "سورەتی الفیل باس لە چی دەکات؟", ar: "ماذا تتحدث سورة الفيل؟", en: "What does Surah Al-Fil talk about?" },
+                options: { ckb: ["فیل و هێرش", "هێرشی ئەبرەهە", "پێغەمبەر", "ئەسحاب الفیل"], ar: ["الفيل والهجوم", "هجوم أبرهة", "النبي", "أصحاب الفيل"], en: ["Elephant and attack", "Abraha's attack", "The Prophet", "Companions of the Elephant"] },
+                correct: 1
+            },
+            {
+                question: { ckb: "سورەتی الإخلاص باسی چی دەکات؟", ar: "ماذا تتحدث سورة الإخلاص؟", en: "What does Surah Al-Ikhlas talk about?" },
+                options: { ckb: ["یەکتاپەرستی", "پێغەمبەران", "بەهەشت", "دۆزەخ"], ar: ["التوحيد", "الأنبياء", "الجنة", "النار"], en: ["Monotheism", "Prophets", "Paradise", "Hell"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی الفلق باسی چی دەکات؟", ar: "ماذا تتحدث سورة الفلق؟", en: "What does Surah Al-Falaq talk about?" },
+                options: { ckb: ["پەنابردن لە شەر", "نوور", "خێر", "بەرەکەت"], ar: ["الاستعاذة من الشر", "النور", "الخير", "البركة"], en: ["Seeking refuge from evil", "Light", "Goodness", "Blessing"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەته کە بە (دایکی قورئان) ناسراوە؟", ar: "ما هي السورة التي تُعرف بأم القرآن؟", en: "Which surah is known as the Mother of the Quran?" },
+                options: { ckb: ["الفاتحة", "البقرة", "یس", "الکهف"], ar: ["الفاتحة", "البقرة", "يس", "الكهف"], en: ["Al-Fatihah", "Al-Baqarah", "Ya-Sin", "Al-Kahf"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "ژمارەی ئایەتەکانی قورئان چەندە؟", ar: "كم عدد آيات القرآن؟", en: "How many verses are in the Quran?" },
+                options: { ckb: ["٦٢٣٦", "٦٢٠٠", "٦٣٠٠", "٦٢٥٠"], ar: ["٦٢٣٦", "٦٢٠٠", "٦٣٠٠", "٦٢٥٠"], en: ["6236", "6200", "6300", "6250"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەته ی کە بە (پارێزەری قورئان) ناسراوە؟", ar: "ما هي السورة التي تُعرف بحامية القرآن؟", en: "Which surah is known as the Protector of the Quran?" },
+                options: { ckb: ["الملك", "السجدة", "الواقعة", "الرحمن"], ar: ["الملك", "السجدة", "الواقعة", "الرحمن"], en: ["Al-Mulk", "As-Sajdah", "Al-Waqi'ah", "Ar-Rahman"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی الرحمن باسی چی دەکات؟", ar: "ماذا تتحدث سورة الرحمن؟", en: "What does Surah Ar-Rahman talk about?" },
+                options: { ckb: ["نیعمەتەکانی خودا", "شەڕ", "بەهەشت", "دۆزەخ"], ar: ["نعم الله", "الحرب", "الجنة", "النار"], en: ["Blessings of Allah", "War", "Paradise", "Hell"] },
+                correct: 0
+            },
+            // ٢١-٣٠
+            {
+                question: { ckb: "سورەتی الواقعة باسی چی دەکات؟", ar: "ماذا تتحدث سورة الواقعة؟", en: "What does Surah Al-Waqi'ah talk about?" },
+                options: { ckb: ["ڕۆژی قیامەت", "مردن", "ژیان", "بەهەشت"], ar: ["يوم القيامة", "الموت", "الحياة", "الجنة"], en: ["Day of Judgment", "Death", "Life", "Paradise"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی الملک باسی چی دەکات؟", ar: "ماذا تتحدث سورة الملك؟", en: "What does Surah Al-Mulk talk about?" },
+                options: { ckb: ["دەسەڵاتی خودا", "فریشتەکان", "ئاسمان", "زەوی"], ar: ["ملك الله", "الملائكة", "السماء", "الأرض"], en: ["Sovereignty of Allah", "Angels", "Sky", "Earth"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی الكهف چەند چیرۆکی تێدایە؟", ar: "كم قصة في سورة الكهف؟", en: "How many stories are in Surah Al-Kahf?" },
+                options: { ckb: ["سێ", "چوار", "پێنج", "شەش"], ar: ["ثلاث", "أربع", "خمس", "ست"], en: ["Three", "Four", "Five", "Six"] },
+                correct: 1
+            },
+            {
+                question: { ckb: "سورەتی مریم باسی کێ دەکات؟", ar: "من تتحدث سورة مريم؟", en: "Who does Surah Maryam talk about?" },
+                options: { ckb: ["مریم و عیسا", "مریم و موسا", "مریم و ئیبراهیم", "مریم و زەکەریا"], ar: ["مريم وعيسى", "مريم وموسى", "مريم وإبراهيم", "مريم وزكريا"], en: ["Maryam and Isa", "Maryam and Musa", "Maryam and Ibrahim", "Maryam and Zakariyya"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی یوسف باسی کێ دەکات؟", ar: "من تتحدث سورة يوسف؟", en: "Who does Surah Yusuf talk about?" },
+                options: { ckb: ["یوسف", "یعقوب", "هەردووکیان", "پێغەمبەران"], ar: ["يوسف", "يعقوب", "كلاهما", "الأنبياء"], en: ["Yusuf", "Yaqub", "Both", "Prophets"] },
+                correct: 2
+            },
+            {
+                question: { ckb: "سورەتی طه باسی کێ دەکات؟", ar: "من تتحدث سورة طه؟", en: "Who does Surah Taha talk about?" },
+                options: { ckb: ["موسا", "عیسا", "محمد", "هارون"], ar: ["موسى", "عيسى", "محمد", "هارون"], en: ["Musa", "Isa", "Muhammad", "Harun"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەته کە ناوی پێغەمبەرێکە؟", ar: "ما هي السورة التي تحمل اسم نبي؟", en: "Which surah is named after a prophet?" },
+                options: { ckb: ["محمد", "أحمد", "طه", "یس"], ar: ["محمد", "أحمد", "طه", "يس"], en: ["Muhammad", "Ahmed", "Taha", "Ya-Sin"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی سبأ باسی کێ دەکات؟", ar: "من تتحدث سورة سبأ؟", en: "Who does Surah Saba talk about?" },
+                options: { ckb: ["قەومی سبأ", "پێغەمبەر", "مەلەکە", "خودا"], ar: ["قوم سبأ", "النبي", "الملكة", "الله"], en: ["People of Saba", "The Prophet", "The Queen", "Allah"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی الأحزاب باسی کێ دەکات؟", ar: "من تتحدث سورة الأحزاب؟", en: "Who does Surah Al-Ahzab talk about?" },
+                options: { ckb: ["خێزانی پێغەمبەر", "پێغەمبەران", "هاوەڵان", "دوژمنان"], ar: ["أزواج النبي", "الأنبياء", "الصحابة", "الأعداء"], en: ["Wives of the Prophet", "Prophets", "Companions", "Enemies"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی الشوری باسی چی دەکات؟", ar: "ماذا تتحدث سورة الشورى؟", en: "What does Surah Ash-Shura talk about?" },
+                options: { ckb: ["ڕاوێژ", "شەڕ", "ئاشتی", "دادپەروەری"], ar: ["الشورى", "الحرب", "السلام", "العدل"], en: ["Consultation", "War", "Peace", "Justice"] },
+                correct: 0
+            },
+            // ٣١-٤٠
+            {
+                question: { ckb: "سورەتی الدخان باسی چی دەکات؟", ar: "ماذا تتحدث سورة الدخان؟", en: "What does Surah Ad-Dukhan talk about?" },
+                options: { ckb: ["دووکەڵ", "ئاگر", "بەهەشت", "دۆزەخ"], ar: ["الدخان", "النار", "الجنة", "جهنم"], en: ["Smoke", "Fire", "Paradise", "Hell"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی محمد باسی کێ دەکات؟", ar: "من تتحدث سورة محمد؟", en: "Who does Surah Muhammad talk about?" },
+                options: { ckb: ["پێغەمبەر محمد", "پێغەمبەران", "موسڵمانان", "بێ باوەڕان"], ar: ["النبي محمد", "الأنبياء", "المسلمون", "الكفار"], en: ["Prophet Muhammad", "Prophets", "Muslims", "Disbelievers"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی الفتح باسی چی دەکات؟", ar: "ماذا تتحدث سورة الفتح؟", en: "What does Surah Al-Fath talk about?" },
+                options: { ckb: ["سەرکەوتن", "شەڕ", "ئاشتی", "کۆچ"], ar: ["الفتح", "الحرب", "السلام", "الهجرة"], en: ["Victory", "War", "Peace", "Migration"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی الحجرات باسی چی دەکات؟", ar: "ماذا تتحدث سورة الحجرات؟", en: "What does Surah Al-Hujurat talk about?" },
+                options: { ckb: ["ڕەوشتی موسڵمانان", "ژنان", "پیاوان", "هاوەڵان"], ar: ["أخلاق المسلمين", "النساء", "الرجال", "الصحابة"], en: ["Muslim ethics", "Women", "Men", "Companions"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی ق باسی چی دەکات؟", ar: "ماذا تتحدث سورة ق؟", en: "What does Surah Qaf talk about?" },
+                options: { ckb: ["قیامەت", "مردن", "ژیان", "خودا"], ar: ["القيامة", "الموت", "الحياة", "الله"], en: ["Resurrection", "Death", "Life", "Allah"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی الذاریات باسی چی دەکات؟", ar: "ماذا تتحدث سورة الذاريات؟", en: "What does Surah Adh-Dhariyat talk about?" },
+                options: { ckb: ["بایەکان", "فرشتەکان", "هەسارەکان", "ئەستێرەکان"], ar: ["الرياح", "الملائكة", "الكواكب", "النجوم"], en: ["Winds", "Angels", "Planets", "Stars"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی الطور باسی چی دەکات؟", ar: "ماذا تتحدث سورة الطور؟", en: "What does Surah At-Tur talk about?" },
+                options: { ckb: ["کێوی طور", "کێوی سینا", "کێوی ئەحد", "کێوی نور"], ar: ["جبل الطور", "جبل سيناء", "جبل أحد", "جبل النور"], en: ["Mount Tur", "Mount Sinai", "Mount Uhud", "Mount Nur"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی النجم باسی چی دەکات؟", ar: "ماذا تتحدث سورة النجم؟", en: "What does Surah An-Najm talk about?" },
+                options: { ckb: ["ئەستێرە", "مانگ", "خۆر", "هەسارە"], ar: ["النجم", "القمر", "الشمس", "الكوكب"], en: ["Star", "Moon", "Sun", "Planet"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی القمر باسی چی دەکات؟", ar: "ماذا تتحدث سورة القمر؟", en: "What does Surah Al-Qamar talk about?" },
+                options: { ckb: ["مانگ", "خۆر", "ئەستێرە", "زەوی"], ar: ["القمر", "الشمس", "النجم", "الأرض"], en: ["Moon", "Sun", "Star", "Earth"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی الحاقة باسی چی دەکات؟", ar: "ماذا تتحدث سورة الحاقة؟", en: "What does Surah Al-Haqqah talk about?" },
+                options: { ckb: ["ڕۆژی قیامەت", "بەهەشت", "دۆزەخ", "مردن"], ar: ["يوم القيامة", "الجنة", "النار", "الموت"], en: ["Day of Judgment", "Paradise", "Hell", "Death"] },
+                correct: 0
+            },
+            // ٤١-٥٠
+            {
+                question: { ckb: "سورەتی نوح باسی کێ دەکات؟", ar: "من تتحدث سورة نوح؟", en: "Who does Surah Nuh talk about?" },
+                options: { ckb: ["نوح", "ئیبراهیم", "موسا", "عیسا"], ar: ["نوح", "إبراهيم", "موسى", "عيسى"], en: ["Nuh", "Ibrahim", "Musa", "Isa"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی الجن باسی کێ دەکات؟", ar: "من تتحدث سورة الجن؟", en: "Who does Surah Al-Jinn talk about?" },
+                options: { ckb: ["پەری", "فریشتە", "مرۆڤ", "شەیتان"], ar: ["الجن", "الملائكة", "الإنس", "الشيطان"], en: ["Jinn", "Angels", "Humans", "Satan"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی القیامة باسی چی دەکات؟", ar: "ماذا تتحدث سورة القيامة؟", en: "What does Surah Al-Qiyamah talk about?" },
+                options: { ckb: ["ڕۆژی قیامەت", "مردن", "ژیان", "بەهەشت"], ar: ["يوم القيامة", "الموت", "الحياة", "الجنة"], en: ["Day of Resurrection", "Death", "Life", "Paradise"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی الإنسان باسی کێ دەکات؟", ar: "من تتحدث سورة الإنسان؟", en: "Who does Surah Al-Insan talk about?" },
+                options: { ckb: ["مرۆڤ", "پێغەمبەر", "فریشتە", "پەری"], ar: ["الإنسان", "النبي", "الملائكة", "الجن"], en: ["Human", "Prophet", "Angels", "Jinn"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی النبأ باسی چی دەکات؟", ar: "ماذا تتحدث سورة النبأ؟", en: "What does Surah An-Naba talk about?" },
+                options: { ckb: ["هەواڵی گەورە", "مردن", "ژیان", "قیامەت"], ar: ["النبأ العظيم", "الموت", "الحياة", "القيامة"], en: ["Great News", "Death", "Life", "Resurrection"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی النازعات باسی چی دەکات؟", ar: "ماذا تتحدث سورة النازعات؟", en: "What does Surah An-Nazi'at talk about?" },
+                options: { ckb: ["فریشتەکانی مردن", "فریشتەکانی بەهەشت", "فریشتەکانی دۆزەخ", "فریشتەکانی ڕەحمەت"], ar: ["ملائكة الموت", "ملائكة الجنة", "ملائكة النار", "ملائكة الرحمة"], en: ["Angels of Death", "Angels of Paradise", "Angels of Hell", "Angels of Mercy"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی التکویر باسی چی دەکات؟", ar: "ماذا تتحدث سورة التكوير؟", en: "What does Surah At-Takwir talk about?" },
+                options: { ckb: ["ڕۆژی قیامەت", "خۆر", "مانگ", "ئەستێرە"], ar: ["يوم القيامة", "الشمس", "القمر", "النجوم"], en: ["Day of Judgment", "Sun", "Moon", "Stars"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی الانفطار باسی چی دەکات؟", ar: "ماذا تتحدث سورة الانفطار؟", en: "What does Surah Al-Infitar talk about?" },
+                options: { ckb: ["ئاسمان", "زەوی", "ڕۆژی قیامەت", "خۆر"], ar: ["السماء", "الأرض", "يوم القيامة", "الشمس"], en: ["Sky", "Earth", "Day of Judgment", "Sun"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی المطففین باسی کێ دەکات؟", ar: "من تتحدث سورة المطففين؟", en: "Who does Surah Al-Mutaffifin talk about?" },
+                options: { ckb: ["فڕۆكەکان", "دەوڵەمەندان", "هەژاران", "بازرگانان"], ar: ["المطففين", "الأغنياء", "الفقراء", "التجار"], en: ["Those who give less", "The Rich", "The Poor", "Traders"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "سورەتی العصر باسی چی دەکات؟", ar: "ماذا تتحدث سورة العصر؟", en: "What does Surah Al-Asr talk about?" },
+                options: { ckb: ["کات", "سەردەم", "دەم", "ڕۆژ"], ar: ["العصر", "الزمن", "الوقت", "الدهر"], en: ["Time", "Era", "Moment", "Age"] },
+                correct: 0
+            },
+            // =============== پێغەمبەران (٥١-٨٠) ===============
+            // ٥١-٦٠
+            {
+                question: { ckb: "یەکەم پێغەمبەر کێیە؟", ar: "من هو أول الأنبياء؟", en: "Who is the first prophet?" },
+                options: { ckb: ["نوح", "آدم", "إبراهیم", "موسى"], ar: ["نوح", "آدم", "إبراهيم", "موسى"], en: ["Nuh", "Adam", "Ibrahim", "Musa"] },
+                correct: 1
+            },
+            {
+                question: { ckb: "کۆتایی پێغەمبەران کێیە؟", ar: "من هو آخر الأنبياء؟", en: "Who is the last prophet?" },
+                options: { ckb: ["عیسی", "محمد", "موسى", "إبراهیم"], ar: ["عيسى", "محمد", "موسى", "إبراهيم"], en: ["Isa", "Muhammad", "Musa", "Ibrahim"] },
+                correct: 1
+            },
+            {
+                question: { ckb: "پێغەمبەره ی کە لە کەشتیەکدا ڕزگار بوو؟", ar: "من هو النبي الذي نجا في السفينة؟", en: "Which prophet was saved in the ark?" },
+                options: { ckb: ["یونس", "نوح", "صالح", "هود"], ar: ["يونس", "نوح", "صالح", "هود"], en: ["Yunus", "Nuh", "Salih", "Hud"] },
+                correct: 1
+            },
+            {
+                question: { ckb: "پێغەمبەر کە لە ناو عوود بوو؟", ar: "من هو النبي الذي كان في بطن الحوت؟", en: "Which prophet was in the belly of the whale?" },
+                options: { ckb: ["یونس", "یوسف", "داوود", "سلیمان"], ar: ["يونس", "يوسف", "داود", "سليمان"], en: ["Yunus", "Yusuf", "Dawud", "Sulaiman"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر کە خەونی بەراستی دەبینی؟", ar: "من هو النبي الذي رأى الرؤيا الصادقة؟", en: "Which prophet saw true dreams?" },
+                options: { ckb: ["یوسف", "إبراهیم", "موسى", "داوود"], ar: ["يوسف", "إبراهيم", "موسى", "داود"], en: ["Yusuf", "Ibrahim", "Musa", "Dawud"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "باوکی پێغەمبەران کێیە؟", ar: "من هو أبو الأنبياء؟", en: "Who is the father of the prophets?" },
+                options: { ckb: ["آدم", "إبراهیم", "نوح", "موسى"], ar: ["آدم", "إبراهيم", "نوح", "موسى"], en: ["Adam", "Ibrahim", "Nuh", "Musa"] },
+                correct: 1
+            },
+            {
+                question: { ckb: "چ پێغەمبەر بوو کە تەوراتی پێدرا؟", ar: "من هو النبي الذي أُنزل عليه التوراة؟", en: "Which prophet was given the Torah?" },
+                options: { ckb: ["عیسی", "موسى", "داوود", "محمد"], ar: ["عيسى", "موسى", "داود", "محمد"], en: ["Isa", "Musa", "Dawud", "Muhammad"] },
+                correct: 1
+            },
+            {
+                question: { ckb: "زەبوور بۆ کێ ناردرا", ar: "من هو النبي الذي أُنزل عليه الزبور؟", en: "Which prophet was given the Zabur?" },
+                options: { ckb: ["داوود", "سلیمان", "موسى", "عیسی"], ar: ["داود", "سليمان", "موسى", "عيسى"], en: ["Dawud", "Sulaiman", "Musa", "Isa"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "ئینجیل بۆ کێ ناردرا", ar: "من هو النبي الذي أُنزل عليه الإنجيل؟", en: "Which prophet was given the Injil?" },
+                options: { ckb: ["عیسی", "موسى", "محمد", "داوود"], ar: ["عيسى", "موسى", "محمد", "داود"], en: ["Isa", "Musa", "Muhammad", "Dawud"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر کە قورئان پێدرا؟", ar: "من هو النبي الذي أُنزل عليه القرآن؟", en: "Which prophet was given the Quran?" },
+                options: { ckb: ["محمد", "عیسی", "موسى", "إبراهیم"], ar: ["محمد", "عيسى", "موسى", "إبراهيم"], en: ["Muhammad", "Isa", "Musa", "Ibrahim"] },
+                correct: 0
+            },
+            // ٦١-٧٠
+            {
+                question: { ckb: "پێغەمبەر کە قسەی لەگەڵ خودا کرد (كلیم الله)؟", ar: "من هو النبي الذي كلمه الله (كليم الله)؟", en: "Which prophet spoke directly to Allah (Kalimullah)?" },
+                options: { ckb: ["موسى", "عیسی", "محمد", "إبراهیم"], ar: ["موسى", "عيسى", "محمد", "إبراهيم"], en: ["Musa", "Isa", "Muhammad", "Ibrahim"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر کە (خلیل الله) ناسراوە؟", ar: "من هو النبي الذي يُعرف بخليل الله؟", en: "Which prophet is known as Khalilullah?" },
+                options: { ckb: ["محمد", "عیسی", "إبراهیم", "موسى"], ar: ["محمد", "عيسى", "إبراهيم", "موسى"], en: ["Muhammad", "Isa", "Ibrahim", "Musa"] },
+                correct: 2
+            },
+            {
+                question: { ckb: "پێغەمبەر کە (روح الله) ناسراوە؟", ar: "من هو النبي الذي يُعرف بروح الله؟", en: "Which prophet is known as Ruhullah?" },
+                options: { ckb: ["موسى", "عیسی", "یحیی", "زەکەریا"], ar: ["موسى", "عيسى", "يحيى", "زكريا"], en: ["Musa", "Isa", "Yahya", "Zakariyya"] },
+                correct: 1
+            },
+            {
+                question: { ckb: "پێغەمبەر کە (ذبیح الله) ناسراوە؟", ar: "من هو النبي الذي يُعرف بذبيح الله؟", en: "Which prophet is known as Dhabihullah?" },
+                options: { ckb: ["إسماعیل", "عیسی", "یوسف", "ئیبراهیم"], ar: ["إسماعيل", "عيسى", "يوسف", "إبراهيم"], en: ["Ismail", "Isa", "Yusuf", "Ibrahim"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر کە زوڕەپووشی کاردەکرد؟", ar: "من هو النبي الذي كان يعمل حداداً؟", en: "Which prophet worked as a blacksmith?" },
+                options: { ckb: ["داوود", "موسى", "عیسی", "ئیبراهیم"], ar: ["داود", "موسى", "عيسى", "إبراهيم"], en: ["Dawud", "Musa", "Isa", "Ibrahim"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر کە لە منداڵیدا قسەی کرد؟", ar: "من هو النبي الذي تكلم في المهد؟", en: "Which prophet spoke in infancy?" },
+                options: { ckb: ["یحیی", "عیسی", "موسى", "سلیمان"], ar: ["يحيى", "عيسى", "موسى", "سليمان"], en: ["Yahya", "Isa", "Musa", "Sulaiman"] },
+                correct: 1
+            },
+            {
+                question: { ckb: "پێغەمبەر کە ٩٥٠ ساڵ ژیاوە؟", ar: "من هو النبي الذي عاش ٩٥٠ سنة؟", en: "Which prophet lived for 950 years?" },
+                options: { ckb: ["نوح", "آدم", "إدریس", "ئیبراهیم"], ar: ["نوح", "آدم", "إدريس", "إبراهيم"], en: ["Nuh", "Adam", "Idris", "Ibrahim"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر کە لە ئاگر ڕزگاری بوو؟", ar: "من هو النبي الذي نجا من النار؟", en: "Which prophet was saved from fire?" },
+                options: { ckb: ["موسى", "عیسی", "إبراهیم", "نوح"], ar: ["موسى", "عيسى", "إبراهيم", "نوح"], en: ["Musa", "Isa", "Ibrahim", "Nuh"] },
+                correct: 2
+            },
+            {
+                question: { ckb: "پێغەمبەر کە دەریای شەق کرد؟", ar: "من هو النبي الذي شق البحر؟", en: "Which prophet split the sea?" },
+                options: { ckb: ["موسى", "یوشع", "هارون", "عیسی"], ar: ["موسى", "يوشع", "هارون", "عيسى"], en: ["Musa", "Yusha", "Harun", "Isa"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر کە گەلی عاد بۆ نێردرا؟", ar: "من هو النبي الذي أُرسل إلى قوم عاد؟", en: "Which prophet was sent to the people of 'Ad?" },
+                options: { ckb: ["هود", "صالح", "شعیب", "لوط"], ar: ["هود", "صالح", "شعيب", "لوط"], en: ["Hud", "Salih", "Shu'ayb", "Lut"] },
+                correct: 0
+            },
+            // ٧١-٨٠
+            {
+                question: { ckb: "پێغەمبەر کە گەلی ثمود بۆ نێردرا؟", ar: "من هو النبي الذي أُرسل إلى قوم ثمود؟", en: "Which prophet was sent to the people of Thamud?" },
+                options: { ckb: ["صالح", "هود", "شعیب", "لوط"], ar: ["صالح", "هود", "شعيب", "لوط"], en: ["Salih", "Hud", "Shu'ayb", "Lut"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر کە گەلی مدین بۆ نێردرا؟", ar: "من هو النبي الذي أُرسل إلى أهل مدين؟", en: "Which prophet was sent to the people of Madyan?" },
+                options: { ckb: ["شعیب", "صالح", "هود", "لوط"], ar: ["شعيب", "صالح", "هود", "لوط"], en: ["Shu'ayb", "Salih", "Hud", "Lut"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر کە گەلی لوط بۆ نێردرا؟", ar: "من هو النبي الذي أُرسل إلى قوم لوط؟", en: "Which prophet was sent to the people of Lut?" },
+                options: { ckb: ["لوط", "ئیبراهیم", "نوح", "موسى"], ar: ["لوط", "إبراهيم", "نوح", "موسى"], en: ["Lut", "Ibrahim", "Nuh", "Musa"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر کە وشتری پێدرابوو؟", ar: "من هو النبي الذي أُعطي الناقة؟", en: "Which prophet was given the she-camel?" },
+                options: { ckb: ["صالح", "هود", "شعیب", "لوط"], ar: ["صالح", "هود", "شعيب", "لوط"], en: ["Salih", "Hud", "Shu'ayb", "Lut"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر کە کەعبەی بنیاد نا؟", ar: "من هو النبي الذي بنى الكعبة؟", en: "Which prophet built the Kaaba?" },
+                options: { ckb: ["ئیبراهیم و ئیسماعیل", "محمد", "نوح", "ئیبراهیم"], ar: ["إبراهيم وإسماعيل", "محمد", "نوح", "إبراهيم"], en: ["Ibrahim and Ismail", "Muhammad", "Nuh", "Ibrahim"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر کە ناوی (إسرائیل) ی هەیە؟", ar: "من هو النبي الذي يُسمى إسرائيل؟", en: "Which prophet is called Israel?" },
+                options: { ckb: ["یعقوب", "یوسف", "ئیبراهیم", "ئیسماعیل"], ar: ["يعقوب", "يوسف", "إبراهيم", "إسماعيل"], en: ["Yaqub", "Yusuf", "Ibrahim", "Ismail"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "چەند پێغەمبەر لە قورئاندا ناوی هاتووە؟", ar: "كم عدد الأنبياء الذين ذكروا في القرآن؟", en: "How many prophets are mentioned in the Quran?" },
+                options: { ckb: ["٢٥", "٢٨", "٣٠", "٢٤"], ar: ["٢٥", "٢٨", "٣٠", "٢٤"], en: ["25", "28", "30", "24"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەری کە لە منداڵیدا لە دەریا ڕزگاری بوو؟", ar: "من هو النبي الذي نجا من البحر في طفولته؟", en: "Which prophet was saved from the sea in his childhood?" },
+                options: { ckb: ["موسى", "عیسی", "یوسف", "نوح"], ar: ["موسى", "عيسى", "يوسف", "نوح"], en: ["Musa", "Isa", "Yusuf", "Nuh"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەری کە لە کاتی منداڵی لە بیر دۆزرایەوە؟", ar: "من هو النبي الذي وُجد في البئر في طفولته؟", en: "Which prophet was found in the well in his childhood?" },
+                options: { ckb: ["یوسف", "موسى", "عیسی", "ئیسماعیل"], ar: ["يوسف", "موسى", "عيسى", "إسماعيل"], en: ["Yusuf", "Musa", "Isa", "Ismail"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەری کێ خاوەنی پەرتەوکێکی گەورە بوو؟", ar: "من هو النبي الذي كان له ملك عظيم؟", en: "Which prophet had a great kingdom?" },
+                options: { ckb: ["سلیمان", "داوود", "موسى", "یوسف"], ar: ["سليمان", "داود", "موسى", "يوسف"], en: ["Sulaiman", "Dawud", "Musa", "Yusuf"] },
+                correct: 0
+            },
+            // =============== پێغەمبەر محمد (٨١-١٠٠) ===============
+            // ٨١-٩٠
+            {
+                question: { ckb: "پێغەمبەری محمد لە کوێ لەدایک بوو؟", ar: "أين وُلد النبي محمد؟", en: "Where was Prophet Muhammad born?" },
+                options: { ckb: ["مەدینە", "مەککە", "طائف", "یەمەن"], ar: ["المدينة", "مكة", "الطائف", "اليمن"], en: ["Madinah", "Makkah", "Taif", "Yemen"] },
+                correct: 1
+            },
+            {
+                question: { ckb: "پێغەمبەر محمد کەی لەدایک بوو؟", ar: "متى وُلد النبي محمد؟", en: "When was Prophet Muhammad born?" },
+                options: { ckb: ["٥٧٠ زاینی", "٦٠٠ زاینی", "٥٥٠ زاینی", "٥٨٠ زاینی"], ar: ["٥٧٠ م", "٦٠٠ م", "٥٥٠ م", "٥٨٠ م"], en: ["570 CE", "600 CE", "550 CE", "580 CE"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "ناوی دایکی پێغەمبەر چییە؟", ar: "ما اسم أم النبي؟", en: "What is the name of the Prophet's mother?" },
+                options: { ckb: ["آمنە", "خدیجە", "عائشة", "فاطمە"], ar: ["آمنة", "خديجة", "عائشة", "فاطمة"], en: ["Aminah", "Khadijah", "Aishah", "Fatimah"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "یەکەم وەحی چی بوو؟", ar: "ما هو أول الوحي؟", en: "What was the first revelation?" },
+                options: { ckb: ["اقرأ", "الحمد", "سبحان", "المدثر"], ar: ["اقرأ", "الحمد", "سبحان", "المدثر"], en: ["Iqra", "Al-Hamd", "Subhan", "Al-Muddaththir"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "غاری حرا چییە؟", ar: "ما هو غار حراء؟", en: "What is the Cave of Hira?" },
+                options: { ckb: ["شوێنی وەحی", "شوێنی شەڕ", "شوێنی کۆچ", "شوێنی حەج"], ar: ["مكان الوحي", "مكان الحرب", "مكان الهجرة", "مكان الحج"], en: ["Place of revelation", "Place of war", "Place of migration", "Place of pilgrimage"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر محمد کەی کۆچی کرد؟", ar: "متى هاجر النبي محمد؟", en: "When did Prophet Muhammad migrate?" },
+                options: { ckb: ["٦٢٢ زاینی", "٦٠٠ زاینی", "٦٣٠ زاینی", "٦٢٠ زاینی"], ar: ["٦٢٢ م", "٦٠٠ م", "٦٣٠ م", "٦٢٠ م"], en: ["622 CE", "600 CE", "630 CE", "620 CE"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "ناوی باوکی پێغەمبەر چی بوو؟", ar: "ما اسم والد النبي؟", en: "What is the name of the Prophet's father?" },
+                options: { ckb: ["عبد الله", "عبد المطلب", "أبو طالب", "عبد العزیز"], ar: ["عبد الله", "عبد المطلب", "أبو طالب", "عبد العزيز"], en: ["Abdullah", "Abdul Muttalib", "Abu Talib", "Abdul Aziz"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "کێ شیری داوه ته پێغەمبەر ؟", ar: "من هي مرضعة النبي؟", en: "Who was the Prophet's wet nurse?" },
+                options: { ckb: ["حلیمە سەعدیە", "ثویبە", "آمنە", "فاطمە"], ar: ["حليمة السعدية", "ثويبة", "آمنة", "فاطمة"], en: ["Halimah Sa'diyah", "Thuwaybah", "Aminah", "Fatimah"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "یەکەم هاوسەری پێغەمبەر کێ بوو؟", ar: "من هي أول زوجات النبي؟", en: "Who was the first wife of the Prophet?" },
+                options: { ckb: ["خدیجە", "عائشە", "سودە", "حفصە"], ar: ["خديجة", "عائشة", "سودة", "حفصة"], en: ["Khadijah", "Aishah", "Sawdah", "Hafsah"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر چەند ساڵ لەگەڵ خەدیجە ژیاوە؟", ar: "كم سنة عاش النبي مع خديجة؟", en: "How many years did the Prophet live with Khadijah?" },
+                options: { ckb: ["٢٥ ساڵ", "٢٠ ساڵ", "٣٠ ساڵ", "١٥ ساڵ"], ar: ["٢٥ سنة", "٢٠ سنة", "٣٠ سنة", "١٥ سنة"], en: ["25 years", "20 years", "30 years", "15 years"] },
+                correct: 0
+            },
+            // ٩١-١٠٠
+            {
+                question: { ckb: "یەکەم شەڕی پێغەمبەر کام بوو؟", ar: "ما هي أول غزوة للنبي؟", en: "What was the first battle of the Prophet?" },
+                options: { ckb: ["بەدر", "ئوحود", "خەندەق", "حەنین"], ar: ["بدر", "أحد", "الخندق", "حنين"], en: ["Badr", "Uhud", "Khandaq", "Hunain"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر لە کام شەڕدا بریندار بوو؟", ar: "في أي غزوة جُرح النبي؟", en: "In which battle was the Prophet wounded?" },
+                options: { ckb: ["ئوحود", "بەدر", "خەندەق", "حەنین"], ar: ["أحد", "بدر", "الخندق", "حنين"], en: ["Uhud", "Badr", "Khandaq", "Hunain"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر چەند جار حەجی کردووە؟", ar: "كم مرة حج النبي؟", en: "How many times did the Prophet perform Hajj?" },
+                options: { ckb: ["یەک جار", "دوو جار", "سێ جار", "چوار جار"], ar: ["مرة واحدة", "مرتين", "ثلاث مرات", "أربع مرات"], en: ["Once", "Twice", "Three times", "Four times"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر کەی کۆچی دوایی کرد؟", ar: "متى توفي النبي؟", en: "When did the Prophet die?" },
+                options: { ckb: ["٦٣٢ زاینی", "٦٣٠ زاینی", "٦٣٤ زاینی", "٦٣٥ زاینی"], ar: ["٦٣٢ م", "٦٣٠ م", "٦٣٤ م", "٦٣٥ م"], en: ["632 CE", "630 CE", "634 CE", "635 CE"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر لە کوێ نێژراوە؟", ar: "أين دُفن النبي؟", en: "Where is the Prophet buried?" },
+                options: { ckb: ["مەدینە", "مەککە", "قودس", "طائف"], ar: ["المدينة", "مكة", "القدس", "الطائف"], en: ["Madinah", "Makkah", "Jerusalem", "Taif"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "ناوی مزگەوتی پێغەمبەر لە مەدینە چییە؟", ar: "ما اسم مسجد النبي في المدينة؟", en: "What is the name of the Prophet's mosque in Madinah?" },
+                options: { ckb: ["المسجد النبوی", "المسجد الحرام", "المسجد الأقصی", "مسجد قباء"], ar: ["المسجد النبوي", "المسجد الحرام", "المسجد الأقصى", "مسجد قباء"], en: ["Al-Masjid an-Nabawi", "Al-Masjid al-Haram", "Al-Aqsa Mosque", "Quba Mosque"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "ژمارەی کوڕانی پێغەمبەر چەند بوو؟", ar: "كم عدد أبناء النبي؟", en: "How many sons did the Prophet have?" },
+                options: { ckb: ["٣", "٢", "٤", "١"], ar: ["٣", "٢", "٤", "١"], en: ["3", "2", "4", "1"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "ژمارەی کچانی پێغەمبەر چەند بوو؟", ar: "كم عدد بنات النبي؟", en: "How many daughters did the Prophet have?" },
+                options: { ckb: ["٤", "٣", "٥", "٢"], ar: ["٤", "٣", "٥", "٢"], en: ["4", "3", "5", "2"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر چەند ساڵ لە مەککە مایەوە؟", ar: "كم سنة مكث النبي في مكة؟", en: "How many years did the Prophet stay in Makkah?" },
+                options: { ckb: ["٥٣ ساڵ", "٤٠ ساڵ", "٦٠ ساڵ", "٥٠ ساڵ"], ar: ["٥٣ سنة", "٤٠ سنة", "٦٠ سنة", "٥٠ سنة"], en: ["53 years", "40 years", "60 years", "50 years"] },
+                correct: 0
+            },
+            {
+                question: { ckb: "پێغەمبەر چەند ساڵ لە مەدینە مایەوە؟", ar: "كم سنة مكث النبي في المدينة؟", en: "How many years did the Prophet stay in Madinah?" },
+                options: { ckb: ["١٠ ساڵ", "١٣ ساڵ", "٨ ساڵ", "١٢ ساڵ"], ar: ["١٠ سنوات", "١٣ سنة", "٨ سنوات", "١٢ سنة"], en: ["10 years", "13 years", "8 years", "12 years"] },
+                correct: 0
+            }
+        ];
+
+        // پێکهاتەکانی ئەپ
+        let currentLanguage = 'ckb';
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let questionLocked = new Array(questions.length).fill(false);
+        let score = 0;
+
+        const quizArea = document.getElementById('quiz-area');
+        const scoreSpan = document.getElementById('score');
+        const answeredSpan = document.getElementById('answered-count');
+        const remainingSpan = document.getElementById('remaining-count');
+        const scoreLabel = document.getElementById('score-label');
+        const answeredLabel = document.getElementById('answered-label');
+        const remainingLabel = document.getElementById('remaining-label');
+        const mainTitle = document.getElementById('main-title');
+        const mainSubtitle = document.getElementById('main-subtitle');
+        const footerText = document.getElementById('footer-text');
+
+        function changeLanguage(lang, btn) {
+            currentLanguage = lang;
+            
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            btn.classList.add('active');
+            
+            mainTitle.textContent = translations[lang].mainTitle;
+            mainSubtitle.textContent = translations[lang].mainSubtitle;
+            scoreLabel.textContent = translations[lang].score;
+            answeredLabel.textContent = translations[lang].answered;
+            remainingLabel.textContent = translations[lang].remaining;
+            footerText.textContent = translations[lang].footer;
+            
+            renderQuestion();
+        }
+
+        function calculateStats() {
+            const answered = userAnswers.filter(a => a !== null).length;
+            const remaining = questions.length - answered;
+
+            answeredSpan.textContent = answered;
+            remainingSpan.textContent = remaining;
+            scoreSpan.textContent = score;
+        }
+
+        function handleAnswerSelection(optionIndex) {
+            if (questionLocked[currentQuestionIndex] || userAnswers[currentQuestionIndex] !== null) {
+                return;
+            }
+
+            const isCorrect = (optionIndex === questions[currentQuestionIndex].correct);
+            
+            userAnswers[currentQuestionIndex] = optionIndex;
+            
+            if (!isCorrect) {
+                questionLocked[currentQuestionIndex] = true;
+            } else {
+                score++;
+            }
+
+            renderQuestion();
+            calculateStats();
+        }
+
+        function renderReviewSection() {
+            const answered = userAnswers.filter(a => a !== null).length;
+            const correct = score;
+            const wrong = answered - correct;
+
+            let reviewGrid = '';
+            for (let i = 0; i < questions.length; i++) {
+                let reviewClass = 'review-item';
+                if (userAnswers[i] !== null) {
+                    reviewClass += ' answered';
+                    if (userAnswers[i] === questions[i].correct) {
+                        reviewClass += ' correct-answer';
+                    } else {
+                        reviewClass += ' wrong-answer';
+                    }
+                }
+                if (i === currentQuestionIndex) {
+                    reviewClass += ' current';
+                }
+                
+                reviewGrid += `<div class="${reviewClass}" onclick="goToQuestion(${i})">${i + 1}</div>`;
+            }
+
+            return `
+                <div class="review-section">
+                    <div class="review-title">${translations[currentLanguage].reviewTitle}</div>
+                    <div class="review-grid">
+                        ${reviewGrid}
+                    </div>
+                    <div class="review-stats">
+                        <div class="review-stat">
+                            <span style="color: #28a745;">${correct}</span>
+                            <label>${translations[currentLanguage].correct}</label>
+                        </div>
+                        <div class="review-stat">
+                            <span style="color: #dc3545;">${wrong}</span>
+                            <label>${translations[currentLanguage].wrong}</label>
+                        </div>
+                        <div class="review-stat">
+                            <span>${answered}</span>
+                            <label>${translations[currentLanguage].answered}</label>
+                        </div>
+                        <div class="review-stat">
+                            <span>${questions.length - answered}</span>
+                            <label>${translations[currentLanguage].remaining}</label>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestionIndex];
+            const selectedAnswer = userAnswers[currentQuestionIndex];
+            const isLocked = questionLocked[currentQuestionIndex];
+            const isAnswered = selectedAnswer !== null;
+
+            const prefixes = ["أ", "ب", "ج", "د"];
+
+            let optionsHtml = '';
+            q.options[currentLanguage].forEach((opt, idx) => {
+                let optionClass = 'option';
+                
+                if (isLocked || isAnswered) {
+                    optionClass += ' disabled-option';
+                    
+                    if (idx === q.correct) {
+                        optionClass += ' correct';
+                    } else if (idx === selectedAnswer && selectedAnswer !== q.correct) {
+                        optionClass += ' wrong';
+                    }
+                } else if (idx === selectedAnswer) {
+                    optionClass += ' selected';
+                }
+
+                optionsHtml += `
+                    <div class="${optionClass}" data-option-index="${idx}">
+                        <span class="option-prefix">${prefixes[idx]}</span>
+                        ${opt}
+                    </div>
+                `;
+            });
+
+            const progressPercent = ((currentQuestionIndex + 1) / questions.length) * 100;
+
+            let warningMessage = '';
+            if (isLocked && selectedAnswer !== null && selectedAnswer !== q.correct) {
+                warningMessage = `
+                    <div class="warning-message">
+                        ${translations[currentLanguage].warning}
+                        ${translations[currentLanguage].correctAnswer}: ${q.options[currentLanguage][q.correct]}
+                    </div>
+                `;
+            }
+
+            const reviewSection = renderReviewSection();
+
+            quizArea.innerHTML = `
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                </div>
+                <div class="question-counter">
+                    ${currentQuestionIndex + 1} / ${questions.length}
+                </div>
+                ${warningMessage}
+                <div class="question-box">
+                    <div class="question-text">
+                        ${q.question[currentLanguage]}
+                    </div>
+                    <div class="options-container" id="options-container">
+                        ${optionsHtml}
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="nav-btn prev-btn" ${currentQuestionIndex === 0 ? 'disabled' : ''} onclick="changeQuestion(-1)">
+                        ${translations[currentLanguage].prevBtn}
+                    </button>
+                    <button class="nav-btn next-btn" ${currentQuestionIndex === questions.length - 1 ? 'disabled' : ''} onclick="changeQuestion(1)">
+                        ${translations[currentLanguage].nextBtn}
+                    </button>
+                </div>
+                ${reviewSection}
+                ${currentQuestionIndex === questions.length - 1 ? `
+                    <button class="nav-btn reset-btn" onclick="showFinalResult()">
+                        ${translations[currentLanguage].resetBtn}
+                    </button>
+                ` : ''}
+            `;
+
+            if (!isLocked && !isAnswered) {
+                document.querySelectorAll('.option').forEach(opt => {
+                    opt.addEventListener('click', function() {
+                        const optionIndex = parseInt(this.dataset.optionIndex);
+                        handleAnswerSelection(optionIndex);
+                    });
+                });
+            }
+        }
+
+        window.changeQuestion = function(direction) {
+            const newIndex = currentQuestionIndex + direction;
+            if (newIndex >= 0 && newIndex < questions.length) {
+                currentQuestionIndex = newIndex;
+                renderQuestion();
+            }
+        };
+
+        window.goToQuestion = function(index) {
+            currentQuestionIndex = index;
+            renderQuestion();
+        };
+
+        window.showFinalResult = function() {
+            const totalAnswered = userAnswers.filter(a => a !== null).length;
+            const percentage = totalAnswered > 0 ? Math.round((score / totalAnswered) * 100) : 0;
+            
+            let message = '';
+            if (score >= 85) message = translations[currentLanguage].excellent;
+            else if (score >= 65) message = translations[currentLanguage].good;
+            else if (score >= 45) message = translations[currentLanguage].average;
+            else message = translations[currentLanguage].needStudy;
+
+            quizArea.innerHTML = `
+                <div class="result-screen">
+                    <h2>${translations[currentLanguage].resultTitle}</h2>
+                    <div class="result-score">${score} ${translations[currentLanguage].points}</div>
+                    <div style="font-size: 1.5rem; margin: 10px 0; color: #0b2b23;">
+                        ${translations[currentLanguage].from} ${totalAnswered} ${translations[currentLanguage].answeredQs}
+                    </div>
+                    <div class="result-message">${message}</div>
+                    <div style="font-size: 1.2rem; margin: 20px 0; color: #555;">
+                        ${translations[currentLanguage].successRate}: ${percentage}%
+                    </div>
+                    <button class="nav-btn restart-btn" onclick="resetQuiz()" style="width: auto; margin: 0 auto;">
+                        ${translations[currentLanguage].restartBtn}
+                    </button>
+                </div>
+            `;
+        };
+
+        window.resetQuiz = function() {
+            currentQuestionIndex = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            questionLocked = new Array(questions.length).fill(false);
+            score = 0;
+            renderQuestion();
+            calculateStats();
+        };
+
+        // دەستپێکردن
+        renderQuestion();
+        calculateStats();
+    </script>
+</body>
+</html>
+
+
+
+    
+</body>
+</html>
